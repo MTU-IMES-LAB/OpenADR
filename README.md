@@ -1,4 +1,4 @@
-# OpenADR
+# OpenADR2.0 Node-Red Node
 
 To install this node perform following steps:
 1) Copy OpenADR.htm and OpenADR.js
