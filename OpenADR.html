@@ -1,0 +1,52 @@
+<script type="text/x-red" data-template-name="OpenADR">
+	<div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    
+	<div class="form-row">
+        <label for="node-input-url"><i class="icon-bookmark"></i> URL</label>
+        <input type="text" id="node-input-url">
+    </div>
+    <div class="form-row">
+        <label for="node-input-rate"><i class="icon-bookmark"></i> Poll Rate (s)</label>
+        <input type="number" id="node-input-rate" placeholder="1-65535">
+    </div>
+	<div class="form-row">
+        <label for="node-input-ven_id"><i class="icon-bookmark"></i> VEN Id</label>
+        <input type="text" id="node-input-ven_id">
+    </div>
+	<div class="form-row">
+        <label for="node-input-ven_profile"><i class="icon-bookmark"></i> OADR2.0 Profile</label>
+        <select name="profile" id="node-input-ven_profile"> <option value="A">A</option> <option value="B">B</option></select> 
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="OpenADR">
+    <p>This is the OpenADR 2.0a VEN Node. Enter VEN_ID, Polling Rate and SERVER URL for receiving data from VTN. In Profile either enter 'A' or 'B' (without quotes). URL and VEN_ID may be different for different profiles. </p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('OpenADR',{
+        category: 'input',
+        defaults: {
+            name: {value: ""},
+            url: {value: ""},
+            rate: {value: "1", validate: RED.validators.number()},
+            ven_id: {value: "45aabf212f9826fe2f8d"},
+			ven_profile: {value: "A"}
+        },
+        color:"BurlyWood",
+        inputs:1,
+        outputs:1,
+        icon: "bridge.png",
+        label: function() {
+            return this.name||"OpenADR-VEN 2.0a";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+
+</script>
+
