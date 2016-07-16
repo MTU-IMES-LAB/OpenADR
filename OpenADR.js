@@ -44,7 +44,7 @@ function OpenADR(config) {
 			var myXMLrequesteventb = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07"> <oadrSignedObject> <oadrRequestEvent d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110"> <eiRequestEvent xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads"> <requestID></requestID> <d3p1:venID>'+node.ven_id+'</d3p1:venID> </eiRequestEvent> </oadrRequestEvent> </oadrSignedObject> </oadrPayload>'		
 			
 			// HTTP Post Request XML for oadr 2b request registration	
-			var myXMLregistration2b = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatePartyRegistration d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <requestID xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads"></requestID>       <d3p1:venID>'+node.ven_id+'</d3p1:venID>       <oadrProfileName>2.0b</oadrProfileName>       <oadrTransportName>simpleHttp</oadrTransportName>       <oadrTransportAddress />       <oadrReportOnly>false</oadrReportOnly>       <oadrXmlSignature>false</oadrXmlSignature>       <oadrHttpPullModel>true</oadrHttpPullModel>     </oadrCreatePartyRegistration>   </oadrSignedObject> </oadrPayload>'
+			var myXMLregistration2b = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatePartyRegistration d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <requestID xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">50004</requestID>       <d3p1:venID>'+node.ven_id+'</d3p1:venID> <oadrVenName>'+node.name+'</oadrVenName>       <oadrProfileName>2.0b</oadrProfileName>       <oadrTransportName>simpleHttp</oadrTransportName>       <oadrTransportAddress />       <oadrReportOnly>false</oadrReportOnly>       <oadrXmlSignature>false</oadrXmlSignature>       <oadrHttpPullModel>true</oadrHttpPullModel>     </oadrCreatePartyRegistration>   </oadrSignedObject> </oadrPayload>'
 
 			// HTTP Post Request XML for oadr 2b Poll
 			var myXMLpoll2b = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrPoll d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <d3p1:venID>'+node.ven_id+'</d3p1:venID>     </oadrPoll>   </oadrSignedObject> </oadrPayload>'		
@@ -73,9 +73,11 @@ function OpenADR(config) {
 		else {
 			oadrCreatePartyRequest();
 			oadrRegisterReport();
-			requestevent2();
 			oadrPoll();
+			requestevent2();
 			oadrRegisteredReport();
+			
+
 			
 			timerID = setInterval(function(){                 
 			  node.status({fill:"green",shape:"dot",text:"Requesting"});
@@ -135,9 +137,9 @@ function OpenADR(config) {
 							requestevent2();
 						}
 						
-					var msg = { payload:body}
+					var msg2 = { payload:body}
 					//console.log(body)
-					node.send(msg);
+					node.send(msg2);
 						});
 				}
 				
@@ -230,6 +232,52 @@ function OpenADR(config) {
 							},
 							body: myXMLpoll2b
 						}, function (error, response, body){ 
+						
+						if(body.indexOf("oadrDistributeEvent") > -1) {
+						var msg1 = { payload:body }
+						node.send(msg1);
+						//console.log(body)
+						}
+						
+						else if(body.indexOf("oadrResponse") > -1) {
+						
+						//console.log(body)
+						}
+						
+						else if(body.indexOf("oadrCreateReport") > -1) {
+						
+						console.log(body)
+						}
+						
+						else if(body.indexOf("oadrRegisterReport") > -1) {
+						
+						console.log(body)
+						}
+						
+						else if(body.indexOf("oadrCancelReport") > -1) {
+						
+						console.log(body)
+						}
+						
+						else if(body.indexOf("oadrUpdateReport") > -1) {
+						
+						console.log(body)
+						}
+						
+						else if(body.indexOf("oadrCancelPartyRegistration") > -1) {
+						
+						console.log(body)
+						}
+						
+						else if(body.indexOf("oadrRequestReregistration") > -1) {
+						oadrCreatePartyRequest();
+						oadrRegisterReport();
+						oadrPoll();
+						requestevent2();
+						console.log(body)
+						}
+						
+						//console.log(body)
 						// Error Handling
 						if (response==undefined){
 							console.log(response);
