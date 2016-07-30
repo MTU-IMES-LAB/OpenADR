@@ -1,5 +1,7 @@
 module.exports = function(RED) {
-
+	
+	var xpath = require('xpath')  
+	var dom = require('xmldom').DOMParser
 
 	var request = require('request');    // To import the library named 'request', it is used to send HTTP post Requests
 	
@@ -56,6 +58,9 @@ function OpenADR(config) {
 			var myXMLregisteredreport = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrRegisteredReport d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <d3p1:eiResponse>         <d3p1:responseCode>200</d3p1:responseCode>         <d3p1:responseDescription>OK</d3p1:responseDescription>         <requestID xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">1e7f5f377168380276ab</requestID>       </d3p1:eiResponse>       <d3p1:venID>'+node.ven_id+'</d3p1:venID>     </oadrRegisteredReport>   </oadrSignedObject> </oadrPayload>'		
 
 			
+			// HTTP Post Request XML for createdEvent
+			var myXMLcreatedevent = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatedEvent d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <eiCreatedEvent xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">         <d3p1:eiResponse>           <d3p1:responseCode>200</d3p1:responseCode>           <d3p1:responseDescription>OK</d3p1:responseDescription>           <requestID />         </d3p1:eiResponse>         <d3p1:eventResponses>           <d3p1:eventResponse>             <d3p1:responseCode>200</d3p1:responseCode>             <d3p1:responseDescription>OK</d3p1:responseDescription>             <requestID>dbadee7f0982a07a9d69</requestID>             <d3p1:qualifiedEventID>               <d3p1:eventID>a86cde0e40d34c0c1cb5</d3p1:eventID>               <d3p1:modificationNumber>9</d3p1:modificationNumber>             </d3p1:qualifiedEventID>             <d3p1:optType>optIn</d3p1:optType>           </d3p1:eventResponse>         </d3p1:eventResponses>         <d3p1:venID>'+node.ven_id+'</d3p1:venID>       </eiCreatedEvent>     </oadrCreatedEvent>   </oadrSignedObject> </oadrPayload>'
+			
 		// Below is the main code for OpenADR message Requests
 		
 		
@@ -82,7 +87,7 @@ function OpenADR(config) {
 			timerID = setInterval(function(){                 
 			  node.status({fill:"green",shape:"dot",text:"Requesting"});
 			  
-				requestevent2();
+				//requestevent2();
 				oadrPoll();
 				
 			}, node.rate*1000);  
@@ -101,8 +106,8 @@ function OpenADR(config) {
 							body: myXMLrequesteventa
 						}, function (error, response, body){
 						// Error Handling
-						if (response==undefined){
-							console.log(response);
+						if (body==undefined){
+							//console.log(response);
 						}
 						else if (response.statusCode==503){
 							requestevent();
@@ -110,6 +115,8 @@ function OpenADR(config) {
 						else if (response.statusCode==500){
 							requestevent();
 						}						
+					
+					
 					var msg = { payload:body }
 									
 					node.send(msg);
@@ -126,9 +133,63 @@ function OpenADR(config) {
 							},
 							body: myXMLrequesteventb
 						}, function (error, response, body){
+						
 						// Error Handling
-						if (response==undefined){
+						if (body==undefined){
 							console.log(response);
+						}
+						
+						else if(body.indexOf("oadrDistributeEvent") > -1) {
+						
+						
+						// Grab data from response xml
+						
+						var doc = new dom().parseFromString(body)
+						var requestID = xpath.select("//*[local-name(.)='requestID']/text()", doc)[0]
+						var eventID = xpath.select("//*[local-name(.)='eventID']/text()", doc)[0]
+						var modificationNumber = xpath.select("//*[local-name(.)='modificationNumber']/text()", doc)[0]
+						
+						
+						
+						
+						// HTTP Post Request XML for createdEvent
+						var myXMLcreatedevent = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatedEvent d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <eiCreatedEvent xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">         <d3p1:eiResponse>           <d3p1:responseCode>200</d3p1:responseCode>           <d3p1:responseDescription>OK</d3p1:responseDescription>           <requestID />         </d3p1:eiResponse>         <d3p1:eventResponses>           <d3p1:eventResponse>             <d3p1:responseCode>200</d3p1:responseCode>             <d3p1:responseDescription>OK</d3p1:responseDescription>             <requestID>'+requestID+'</requestID>             <d3p1:qualifiedEventID>               <d3p1:eventID>'+eventID+'</d3p1:eventID>               <d3p1:modificationNumber>'+modificationNumber+'</d3p1:modificationNumber>             </d3p1:qualifiedEventID>             <d3p1:optType>optIn</d3p1:optType>           </d3p1:eventResponse>         </d3p1:eventResponses>         <d3p1:venID>'+node.ven_id+'</d3p1:venID>       </eiCreatedEvent>     </oadrCreatedEvent>   </oadrSignedObject> </oadrPayload>'
+						
+						
+						var array_signalID = [];
+						var array_value=[];
+						for(var i=0;i<50;i++){
+						
+						var signalID = xpath.select("//*[local-name(.)='eiEvent']/*[local-name(.)='eiEventSignals']/*[local-name(.)='eiEventSignal']/*[local-name(.)='signalID']/text()", doc)[i]
+						var value = xpath.select("//*[local-name(.)='eiEvent']/*[local-name(.)='eiEventSignals']/*[local-name(.)='eiEventSignal']/*[local-name(.)='currentValue']/*[local-name(.)='payloadFloat']/*[local-name(.)='value']/text()", doc)[i]
+						array_signalID.push('"'+ signalID +'"');
+						array_value.push('"' + value + '"');
+						
+						if(value!==undefined){
+						
+
+						}
+						if (value===undefined){ break;}
+						//console.log(value.nodeValue)
+						}
+						var msg = { payload:body, all_data: '{"signalID":['+array_signalID +'], "CurrentValue":['+array_value +']}', value:array_value}
+						node.send(msg);
+												
+						
+						oadrCreatedEvent();
+						console.log(body)
+						
+						
+						}
+
+						
+							
+							
+							
+						
+						else if(body.indexOf("oadrResponse") > -1) {
+						
+						//console.log(body)
 						}
 						else if (response.statusCode==500){
 							requestevent2();
@@ -137,9 +198,6 @@ function OpenADR(config) {
 							requestevent2();
 						}
 						
-					var msg2 = { payload:body}
-					//console.log(body)
-					node.send(msg2);
 						});
 				}
 				
@@ -149,6 +207,8 @@ function OpenADR(config) {
 					request({
 					url: node.url+'/OpenADR2/Simple/2.0b/EiRegisterParty',
 					method: "POST",
+					
+					
 					headers: {
 								"content-type": "application/xml",  // <--Very important!!!
 							},
@@ -157,7 +217,7 @@ function OpenADR(config) {
 							
 					//console.log(body)
 						// Error Handling
-						if (response==undefined){
+						if (body==undefined){
 							console.log(response);
 						}
 						else if (response.statusCode==500){
@@ -183,7 +243,7 @@ function OpenADR(config) {
 							body: myXMLregisterreport
 						}, function (error, response, body){
 						// Error Handling
-						if (response==undefined){
+						if (body==undefined){
 							console.log(response);
 						}
 						else if (response.statusCode==500){
@@ -195,7 +255,30 @@ function OpenADR(config) {
 						});
 				}
 				
+
 				
+				
+				function oadrCreatedEvent() {
+					request({
+					url: node.url+'/OpenADR2/Simple/2.0b/EiEvent',
+					method: "POST",
+					headers: {
+								"content-type": "application/xml",  // <--Very important!!!
+							},
+							body: myXMLcreatedevent
+						}, function (error, response, body){
+						// Error Handling
+						if (body==undefined){
+							console.log(response);
+						}
+						else if (response.statusCode==500){
+							oadrCreatedEvent();
+						}						
+						else if (response.statusCode==503){
+							oadrCreatedEvent();
+						}							
+						});
+				}
 				
 				function oadrRegisteredReport() {
 					request({
@@ -207,7 +290,7 @@ function OpenADR(config) {
 							body: myXMLregisteredreport
 						}, function (error, response, body){
 						// Error Handling
-						if (response==undefined){
+						if (body==undefined){
 							console.log(response);
 						}
 						else if (response.statusCode==500){
@@ -233,10 +316,44 @@ function OpenADR(config) {
 							body: myXMLpoll2b
 						}, function (error, response, body){ 
 						
-						if(body.indexOf("oadrDistributeEvent") > -1) {
-						var msg1 = { payload:body }
-						node.send(msg1);
-						//console.log(body)
+						if (body==undefined){
+							//console.log(response);
+						}
+						else if(body.indexOf("oadrDistributeEvent") > -1) {
+						//var msg = { payload:body }
+						//node.send(msg);
+						
+						// Grab data from response xml
+						var doc = new dom().parseFromString(body)
+						var requestID = xpath.select("//*[local-name(.)='requestID']/text()", doc)[0]
+						var eventID = xpath.select("//*[local-name(.)='eventID']/text()", doc)[0]
+						var modificationNumber = xpath.select("//*[local-name(.)='modificationNumber']/text()", doc)[0]
+						
+						//HTTP Post Request XML for createdEvent
+						var myXMLcreatedevent = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatedEvent d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <eiCreatedEvent xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">         <d3p1:eiResponse>           <d3p1:responseCode>200</d3p1:responseCode>           <d3p1:responseDescription>OK</d3p1:responseDescription>           <requestID />         </d3p1:eiResponse>         <d3p1:eventResponses>           <d3p1:eventResponse>             <d3p1:responseCode>200</d3p1:responseCode>             <d3p1:responseDescription>OK</d3p1:responseDescription>             <requestID>'+requestID+'</requestID>             <d3p1:qualifiedEventID>               <d3p1:eventID>'+eventID+'</d3p1:eventID>               <d3p1:modificationNumber>'+modificationNumber+'</d3p1:modificationNumber>             </d3p1:qualifiedEventID>             <d3p1:optType>optIn</d3p1:optType>           </d3p1:eventResponse>         </d3p1:eventResponses>         <d3p1:venID>'+node.ven_id+'</d3p1:venID>       </eiCreatedEvent>     </oadrCreatedEvent>   </oadrSignedObject> </oadrPayload>'
+						var array_value=[];
+						var array_signalID=[];
+						for(var i=0;i<50;i++){
+						var signalID = xpath.select("//*[local-name(.)='signalID']/text()", doc)[i]
+						var value = xpath.select("//*[local-name(.)='currentValue']/*[local-name(.)='payloadFloat']/*[local-name(.)='value']/text()", doc)[i]
+						array_value.push('"'+ value +'"' )
+						array_signalID.push('"'+ signalID+ '"')
+						if (value===undefined){ break;}
+						
+						else if(value!==undefined){
+						
+						
+						}
+						oadrCreatedEvent();
+						
+						//console.log(value.nodeValue)
+						}
+						
+						var msg = { payload:body, all_data: '{"signalID":['+array_signalID +'], "CurrentValue":['+array_value +']}', value:array_value}
+						node.send(msg);
+						
+						
+						console.log(body)
 						}
 						
 						else if(body.indexOf("oadrResponse") > -1) {
@@ -252,6 +369,8 @@ function OpenADR(config) {
 						else if(body.indexOf("oadrRegisterReport") > -1) {
 						
 						console.log(body)
+						
+						oadrRegisteredReport();
 						}
 						
 						else if(body.indexOf("oadrCancelReport") > -1) {
@@ -279,9 +398,7 @@ function OpenADR(config) {
 						
 						//console.log(body)
 						// Error Handling
-						if (response==undefined){
-							console.log(response);
-						}
+						
 						else if (response.statusCode==500){
 							oadrPoll();
 						}
