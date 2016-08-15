@@ -4,9 +4,9 @@
   "description": "Node-RED node for OpenADR VEN.",
   "main": "OpenADR.js",
   "dependencies": {
-    "request": "^2.73.0",
-    "xmldom":"0.1.22",
-    "xpath":"0.0.23"
+    "request": ">=2.73.0",
+    "xmldom":">=0.1.22",
+    "xpath":">=0.0.23"
   },
   "devDependencies": {},
   "scripts": {
