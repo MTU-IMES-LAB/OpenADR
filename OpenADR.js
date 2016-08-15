@@ -177,7 +177,7 @@ function OpenADR(config) {
 												
 						
 						oadrCreatedEvent();
-						console.log(body)
+						//console.log(body)
 						
 						
 						}
