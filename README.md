@@ -1,7 +1,9 @@
 # OpenADR2.0 Node-Red Node
 
-To install this node perform following steps:
-1) Copy OpenADR.htm and OpenADR.js
-2) Paste to location: "C:\Users\<Piyush>\.node-red\nodes" 
+To install using this repo:
 
-Note: Replace <Piyush> in above address by username of your windows account
+1. cd into the nodes directory of Node-RED
+2. Either:
+>download the zip of the repository and extract it
+>run git clone https://github.com/MTU-IMES-LAB/OpenADR.git
+3. run npm install in any of the node subfolders to install individual node's dependencies
