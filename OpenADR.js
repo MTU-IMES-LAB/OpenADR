@@ -53,6 +53,10 @@ function OpenADR(config) {
         		
 		var node = this;
 		var timerID;
+
+//----------------------------------------------------------------------------------------------------------//
+// HTTP Post Request XML for oadr 2b request registration	
+					var myXMLregistration2b = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatePartyRegistration d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <requestID xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">50004</requestID>       <d3p1:venID>'+node.ven_id+'</d3p1:venID> <oadrVenName>'+node.name+'</oadrVenName>       <oadrProfileName>2.0b</oadrProfileName>       <oadrTransportName>simpleHttp</oadrTransportName>       <oadrTransportAddress />       <oadrReportOnly>false</oadrReportOnly>       <oadrXmlSignature>false</oadrXmlSignature>       <oadrHttpPullModel>true</oadrHttpPullModel>     </oadrCreatePartyRegistration>   </oadrSignedObject> </oadrPayload>'
 		
 //----------------------------------------------------------------------------------------------------------------//
 		// Below is the main code for OpenADR message Requests
@@ -70,9 +74,12 @@ function OpenADR(config) {
 		
 		else {
 			oadrQueryRegistration();
-			oadrCreatePartyRegistration();
+			
 			
 		}
+		
+		
+		
 		
 // Below are the HTTP post Requests for various functions specified in OpenADR specification
 //---------------------------------------------------------------------------------------------------------------------------------------//
@@ -112,11 +119,12 @@ function OpenADR(config) {
 
 //----------------------------------------------------------------------------------------------------------------------------------//
 				
-				// Function for EiRegistration
-				function oadrCreatePartyRegistration() {
 					
-					// HTTP Post Request XML for oadr 2b request registration	
-					var myXMLregistration2b = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatePartyRegistration d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <requestID xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">50004</requestID>       <d3p1:venID>'+node.ven_id+'</d3p1:venID> <oadrVenName>'+node.name+'</oadrVenName>       <oadrProfileName>2.0b</oadrProfileName>       <oadrTransportName>simpleHttp</oadrTransportName>       <oadrTransportAddress />       <oadrReportOnly>false</oadrReportOnly>       <oadrXmlSignature>false</oadrXmlSignature>       <oadrHttpPullModel>true</oadrHttpPullModel>     </oadrCreatePartyRegistration>   </oadrSignedObject> </oadrPayload>'
+					
+				// Function for EiRegistration
+				function oadrCreatePartyRegistration(myXMLregistration2b) {
+					
+					
 					
 					
 					request({
@@ -149,10 +157,10 @@ function OpenADR(config) {
 							console.log(response);
 						}
 						else if (response.statusCode==500){
-							oadrCreatePartyRegistration();
+							oadrCreatePartyRegistration(myXMLregistration2b);
 						}						
 						else if (response.statusCode==503){
-							oadrCreatePartyRegistration();
+							oadrCreatePartyRegistration(myXMLregistration2b);
 						}
 						
 						oadrPoll(ven_ID,registrationID);
@@ -192,23 +200,28 @@ function OpenADR(config) {
 							body: myXMLQueryRegistration
 						}, function (error, response, body){
 							
-					console.log("\n VEN ----------oadrQueryRegistration-------------> VTN \n")
-					console.log(new Date().toISOString())
-					console.log(myXMLQueryRegistration)
-					console.log("\n VTN ----------oadrCreatedPartyRegistration------------> VEN \n")
-					console.log(new Date().toISOString())
-					console.log(body)
+
 						// Error Handling
 						if (body==undefined){
 							console.log(response);
+							console.log(error);
+							oadrQueryRegistration();
 						}
 						else if (response.statusCode==500){
-							oadrCreatePartyRegistration();
+							oadrQueryRegistration();
 						}						
 						else if (response.statusCode==503){
-							oadrCreatePartyRegistration();
+							oadrQueryRegistration();
 						}
-						
+						else {
+							console.log("\n VEN ----------oadrQueryRegistration-------------> VTN \n")
+							console.log(new Date().toISOString())
+							console.log(myXMLQueryRegistration)
+							console.log("\n VTN ----------oadrCreatedPartyRegistration------------> VEN \n")
+							console.log(new Date().toISOString())
+							console.log(body)
+							oadrCreatePartyRegistration(myXMLregistration2b);
+						}
 						});
 				}
 				
@@ -242,6 +255,8 @@ function OpenADR(config) {
 						// Error Handling
 						if (body==undefined){
 							console.log(response);
+							oadrRegisterReport();
+							
 						}
 						else if (response.statusCode==500){
 							oadrRegisterReport();
@@ -275,6 +290,7 @@ function OpenADR(config) {
 						// Error Handling
 						if (body==undefined){
 							console.log(response);
+							oadrCreatedEvent(myXMLcreatedevent);
 						}
 						else if (response.statusCode==500){
 							oadrCreatedEvent(myXMLcreatedevent);
@@ -309,6 +325,7 @@ function OpenADR(config) {
 						// Error Handling
 						if (body==undefined){
 							console.log(response);
+							oadrRegisteredReport(ven_ID);
 						}
 						else if (response.statusCode==500){
 							oadrRegisteredReport(ven_ID);
@@ -345,6 +362,7 @@ function OpenADR(config) {
 						// Error Handling
 						if (body==undefined){
 							console.log(response);
+							oadrResponse(ven_ID);
 						}
 						else if (response.statusCode==500){
 							oadrResponse(ven_ID);
@@ -392,6 +410,7 @@ function OpenADR(config) {
 						
 						if (body==undefined){
 							//console.log(response);
+							oadrPoll(ven_ID,registrationID);
 						}
 						else if(body.indexOf("oadrDistributeEvent") > -1) {
 						//var msg = { payload:body }
@@ -440,7 +459,7 @@ function OpenADR(config) {
 						console.log("\n VTN-------oadrRequestRegistration---------->  VEN \n")
 						console.log(new Date().toISOString())
 						console.log(body)
-						oadrCreatePartyRegistration();
+						oadrCreatePartyRegistration(myXMLregistration2b);
 						}
 						
 						else if(body.indexOf("oadrCreateReport") > -1) {
@@ -484,7 +503,10 @@ function OpenADR(config) {
 						console.log(new Date().toISOString())
 						console.log(body)
 						oadrResponse(ven_ID);
-						oadrCreatePartyRegistration();
+						
+						// HTTP Post Request XML for oadr 2b request registration	
+					var myXMLReregistration = '<?xml version="1.0" encoding="utf-8"?> <oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">   <oadrSignedObject>     <oadrCreatePartyRegistration d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">       <requestID xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">50004</requestID> <d3p1:registrationID>'+registrationID+'</d3p1:registrationID>      <d3p1:venID>'+node.ven_id+'</d3p1:venID> <oadrVenName>'+node.name+'</oadrVenName>       <oadrProfileName>2.0b</oadrProfileName>       <oadrTransportName>simpleHttp</oadrTransportName>       <oadrTransportAddress />       <oadrReportOnly>false</oadrReportOnly>       <oadrXmlSignature>false</oadrXmlSignature>       <oadrHttpPullModel>true</oadrHttpPullModel>     </oadrCreatePartyRegistration>   </oadrSignedObject> </oadrPayload>'
+						oadrCreatePartyRegistration(myXMLReregistration);
 
 						
 						}
@@ -533,6 +555,7 @@ function OpenADR(config) {
 						// Error Handling
 						if (body==undefined){
 							console.log(response);
+							requestevent2(ven_ID);
 						}
 						
 						else if(body.indexOf("oadrDistributeEvent") > -1) {
