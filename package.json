@@ -4,13 +4,12 @@
   "description": "Node-RED node for OpenADR VEN.",
   "main": "OpenADR.js",
   "dependencies": {
-    "request": ">=2.73.0",
-    "xmldom":">=0.1.22",
-    "xpath":">=0.0.23"
+    "xml-crypto": "^6.1.2",
+    "xmldom": "^0.6.0",
+    "xpath": "^0.0.23"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -20,7 +19,7 @@
     "node-red",
     "openadr",
     "VEN",
-    "OpenADR2.0"    
+    "OpenADR2.0"
   ],
   "node-red": {
     "nodes": {
@@ -28,7 +27,7 @@
     }
   },
   "author": "Piyush Aggarwal",
-  "license": "",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MTU-IMES-LAB/OpenADR/issues"
   },

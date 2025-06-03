@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">
+  <oadrSignedObject>
+    <oadrUpdateReport d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">
+      <d3p1:report>
+        <d3p1:eiReportID>VEN_Report_001</d3p1:eiReportID>
+        <d3p1:reportSpecifierID>VEN_Specifier_001</d3p1:reportSpecifierID>
+        <d3p1:reportName>METADATA_TELEMETRY_USAGE</d3p1:reportName>
+        <d3p1:createdDateTime>2024-01-01T00:00:00Z</d3p1:createdDateTime>
+        <d3p1:intervals>
+          <d3p1:interval>
+            <d3p1:dtstart>
+              <d3p1:date-time>2024-01-01T00:00:00Z</d3p1:date-time>
+            </d3p1:dtstart>
+            <d3p1:duration>PT1M</d3p1:duration>
+            <d3p1:reportPayload>
+              <d3p1:rID>power_real</d3p1:rID>
+              <d3p1:value>42.00</d3p1:value>
+            </d3p1:reportPayload>
+          </d3p1:interval>
+        </d3p1:intervals>
+        <d3p1:reportRequestID></d3p1:reportRequestID>
+        <d3p1:venID>testVEN</d3p1:venID>
+      </d3p1:report>
+    </oadrUpdateReport>
+  </oadrSignedObject>
+</oadrPayload>

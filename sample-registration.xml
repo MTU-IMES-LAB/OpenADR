@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<oadrPayload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://openadr.org/oadr-2.0b/2012/07">
+  <oadrSignedObject>
+    <oadrCreatePartyRegistration d3p1:schemaVersion="2.0b" xmlns:d3p1="http://docs.oasis-open.org/ns/energyinterop/201110">
+      <requestID xmlns="http://docs.oasis-open.org/ns/energyinterop/201110/payloads">50004</requestID>
+      <d3p1:venID>testVEN</d3p1:venID>
+      <oadrVenName>TestVEN</oadrVenName>
+      <oadrProfileName>2.0b</oadrProfileName>
+      <oadrTransportName>simpleHttp</oadrTransportName>
+      <oadrTransportAddress />
+      <oadrReportOnly>false</oadrReportOnly>
+      <oadrXmlSignature>false</oadrXmlSignature>
+      <oadrHttpPullModel>true</oadrHttpPullModel>
+    </oadrCreatePartyRegistration>
+  </oadrSignedObject>
+</oadrPayload>
