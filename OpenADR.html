@@ -20,6 +20,22 @@
         <label for="node-input-ven_profile"><i class="icon-bookmark"></i> OADR2.0 Profile</label>
         <select name="profile" id="node-input-ven_profile"> <option value="A">A</option> <option value="B">B</option></select> 
     </div>
+	<div class="form-row">
+        <label for="node-input-cert"><i class="icon-lock"></i> Client Certificate</label>
+        <input type="text" id="node-input-cert" placeholder="Path to .pem or .crt file">
+    </div>
+	<div class="form-row">
+        <label for="node-input-key"><i class="icon-lock"></i> Client Key</label>
+        <input type="text" id="node-input-key" placeholder="Path to .key file">
+    </div>
+	<div class="form-row">
+        <label for="node-input-ca"><i class="icon-lock"></i> CA Certificate</label>
+        <input type="text" id="node-input-ca" placeholder="Path to CA .pem file">
+    </div>
+	<div class="form-row">
+        <label for="node-input-rejectUnauthorized"><i class="icon-lock"></i> Strict SSL</label>
+        <input type="checkbox" id="node-input-rejectUnauthorized" checked>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="OpenADR">
@@ -34,7 +50,11 @@
             url: {value: ""},
             rate: {value: "1", validate: RED.validators.number()},
             ven_id: {value: "45aabf212f9826fe2f8d"},
-			ven_profile: {value: "A"}
+            ven_profile: {value: "A"},
+            cert: {value: ""},
+            key: {value: ""},
+            ca: {value: ""},
+            rejectUnauthorized: {value: true}
         },
         color:"BurlyWood",
         inputs:1,
